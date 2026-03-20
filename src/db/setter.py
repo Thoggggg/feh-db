@@ -1,6 +1,7 @@
 from math import floor
 from mysql.connector.abstracts import MySQLCursorAbstract
 from mysql.connector.errors import ProgrammingError
+import logging
 
 from src.scraper.stats.stat_class import Stat
 
@@ -31,8 +32,7 @@ def set_my_characters(
 
         growth = _get_growth_rate_dict(character_stats)
     except ValueError as err:
-        print(character_stats)
-        print(f"[ERROR] {err}")
+        logging.error(f"Error on {character_stats} : {err}")
 
         return character_stats
 
@@ -45,8 +45,7 @@ def set_my_characters(
     try:
         cursor.execute(query, "")
     except ProgrammingError as err:
-        print(f"[ERROR] This query wasn't succesful : {' '.join(query.split())}")
-        print(err)
+        logging.error(f"This query wasn't succesful : {' '.join(query.split())}. More info : {err}")
         return character_stats
 
     if len(cursor.fetchall()) == 0:
@@ -73,11 +72,10 @@ def set_my_characters(
             f"WHERE Character_ID = {id}"
 
     try:
-        print(query)
+        logging.debug(query)
         cursor.execute(query, "")
     except ProgrammingError as err:
-        print(f"[ERROR] This query wasn't succesful : {' '.join(query.split())}")
-        print(err)
+        logging.error(f"[ERROR] This query wasn't succesful : {' '.join(query.split())}. more info : {err}")
 
     return character_stats
 
@@ -87,18 +85,17 @@ def _get_characters_stats(cursor: MySQLCursorAbstract, id: int):
     try:
         cursor.execute(query, "")
     except ProgrammingError as err:
-        print(f"[ERROR] This query wasn't succesful : {' '.join(query.split())}")
-        print(err)
+        logging.error(f"[ERROR] This query wasn't succesful : {' '.join(query.split())}. More info : {err}")
         return []
     character_stats = cursor.fetchall()
 
     # Check that the character stats are correct
     if len(character_stats) != 1:
-        print(f"[ERROR] Fetched ID ({id}) is probably wrong")
+        logging.error(f"Fetched ID ({id}) is probably wrong")
         return []
 
     if len(character_stats[0]) != 16:
-        print("[ERROR] Couldn't unpack characterstats")
+        logging.critical("[ERROR] Couldn't unpack characterstats")
         return []
 
     return character_stats[0][1:]  # Ignore the character ID
@@ -112,12 +109,12 @@ def _get_buff_dict(buff: str, nerf: str) -> Stat:
     if buff in traits_dic.keys():
         traits_dic[buff] = 1
     else:
-        print(f"Ignoring {id} buff ({buff} was unexpected)")
+        logging.warning(f"Ignoring {id} buff ({buff} was unexpected)")
 
     if nerf in traits_dic.keys():
         traits_dic[nerf] = -1
     else:
-        print(f"Ignoring {id} nerf ({nerf} was unexpected)")
+        logging.(f"Ignoring {id} nerf ({nerf} was unexpected)")
 
     return Stat(traits_dic['hp'], traits_dic['atk'], traits_dic['spd'], traits_dic['def'], traits_dic['res'])
 

@@ -1,3 +1,5 @@
+import logging
+
 from src.scraper.heroes.hero_class import Hero
 from src.scraper.template_extract import extract_default
 
@@ -35,7 +37,7 @@ def extract_all_stats(html: str) -> Hero:
         return Hero(picture, name, title, game, "",
                     move, weapon, rarity, attributes, release)
     except Exception as err:
-        print(f"[ERROR] {err}. \n{html}")
+        logging.error(f"{err}. \n{html}")
         return Hero("", "", "", "", "", "", "", "", [], "0001-01-01")
 
 
@@ -79,21 +81,3 @@ def extract_rarity(html: str) -> str:
 
 def extract_release(html: str) -> str:
     return extract_default(html, "../templates/heroes/release.html", 0)
-
-
-if __name__ == '__main__':
-    # text = open("example/10.html", "r", encoding='utf-8').read()
-    # template = open("template.html", "r", encoding='utf-8').read()
-
-    for i in range(1, 11):
-        print(f"==============={i}===============")
-        text = open(f"example/{i}.html", "r", encoding='utf-8').read()
-        hero = extract_all_stats(text)
-        print(hero.picture)
-        print(hero.name)
-        print(hero.title)
-        print(hero.game)
-        print(hero.entry)
-        print(hero.move)
-        print(hero.weapon)
-        print(hero.release)

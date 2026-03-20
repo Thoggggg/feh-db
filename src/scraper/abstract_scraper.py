@@ -5,6 +5,7 @@ import os
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 import requests
+import logging
 
 
 class Scraper:
@@ -14,7 +15,7 @@ class Scraper:
         self.skip_download = skip_download
         self.fandom_url = url
         if url is not None:
-            print(url)
+            logging.error(f"Scraper is using this url : {url}")
             page_name = url.split("page=")[1].split("&prop")[0]
             self.html_output = f"../html/base_{page_name}.html"
 
@@ -30,7 +31,7 @@ class Scraper:
             soup = self._get_html()
         else:
             # Read the base.html file instead
-            print("[INFO] Decided to not download the html file")
+            logging.info("Decided to not download the html file")
             with open(self.html_output, 'r', encoding='utf-8') as file:
                 html_cont = file.read()
 

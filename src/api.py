@@ -15,14 +15,16 @@ from src.enums.weapons import Weapons
 from src.reset import delete_all
 from src.scraper.generic_scraper import FehScraper
 from src.sync import sync
+import logging
 
-
-# The 3 main components
+# The 4 main components
 app = FastAPI()
 
 feh_scraper = FehScraper()
 
 db = SQL()
+
+logging.basicConfig("feh_db")
 
 
 class HeroesFilters(BaseModel):

@@ -1,3 +1,4 @@
+import logging
 from src.scraper.generic_scraper import FehScraper
 from src.db.sql import SQL
 
@@ -29,29 +30,29 @@ def sync(feh_scraper: FehScraper, db: SQL):
 
         # Check if the data is correct
         if not hero.is_valid():
-            print(f"[WARNING] {hero.name} name is invalid")
+            logging.warning(f"{hero.name} name is invalid")
             continue
 
         if not lvl1_stat.is_valid():
-            print(f"[WARNING] {hero.name} lvl1 is invalid")
+            logging.warning(f"{hero.name} lvl1 is invalid")
             continue
 
         if not lvl40_stat.is_valid():
-            print(f"[WARNING] {hero.name} lvl40 is invalid")
+            logging.warning(f"{hero.name} lvl40 is invalid")
             continue
 
         if not gr_stat.is_valid():
-            print(f"[WARNING] {hero.name} growth rate is invalid")
+            logging.warning(f"{hero.name} growth rate is invalid")
             continue
 
         if not db.is_character_existing(hero):
-            print(f"[INFO] Adding {hero.name} as he was unknown before")
+            logging.info(f"Adding {hero.name} as he was unknown before")
             hero_id = db.add_characters(hero)
             db.add_stats(hero_id, lvl1_stat, lvl40_stat, gr_stat)
         else:
             skipped_counter += 1
 
-    print(f"[INFO] skipped {skipped_counter} out of {len(heroes)}")
+    logging.indo(f"skipped {skipped_counter} out of {len(heroes)}")
 
 
 if __name__ == "__main__":

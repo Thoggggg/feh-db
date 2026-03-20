@@ -1,4 +1,5 @@
 from itertools import product
+import logging
 
 import mysql.connector
 from mysql.connector.abstracts import MySQLCursorAbstract as SqlCursor
@@ -23,7 +24,7 @@ def setup_db(cursor: SqlCursor):
     db_list = [db[0] for db in db_list]
 
     if DB_NAME not in db_list:
-        print(f"[INFO] db not found, creating {DB_NAME}")
+        logging.warning(f"db not found, creating {DB_NAME}")
         cursor.execute(f"CREATE DATABASE {DB_NAME}")
 
 
@@ -42,13 +43,11 @@ def setup_tables(cursor: SqlCursor):
 
     for table, create_str in create_tables.items():
         if table.lower() not in table_list:
-            print(f"[INFO] table not found, creating {table}")
+            logging.info(f"table not found, creating {table}")
             try:
                 cursor.execute(f"CREATE TABLE {create_str}")
             except mysql.connector.Error as err:
-                print("Something went wrong:")
-                print(f"Error Code: {err.errno}")
-                print(f"Message: {err.msg}")
+                logging.error(f"Tried to create a table : {err}")
 
 
 def fill_movements(db, cursor: SqlCursor):

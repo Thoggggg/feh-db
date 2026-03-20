@@ -2,7 +2,6 @@ import re
 
 
 def get_from_template(text, template):
-    # Delete ? as it could be a regex
     template = template.replace("?", "@")
     text = text.replace("?", "@")
     text = text.replace("%", "ù")
@@ -12,7 +11,7 @@ def get_from_template(text, template):
 
     # Find the matched
     if len(m) == 0:
-        print("No match found")
+        logging.warning(f"No match found in {text} with {template}")
     else:
         return m
 

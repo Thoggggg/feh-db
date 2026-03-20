@@ -1,5 +1,6 @@
 from mysql.connector.errors import ProgrammingError as SqlProgrammingError
 import mysql.connector
+import logging
 
 from src.db.init import DB_NAME
 from src.db.init import fill_movements, fill_weapons
@@ -34,7 +35,7 @@ class SQL:
                 stdout. Defaults to False.
         """
         if verbose:
-            print(query)
+            logging.debug(query)
         self.cursor.execute(query, "")
         self.db.commit()
 
@@ -76,11 +77,11 @@ class SQL:
             setup_tables(mycursor)
             fill_movements(mydb, mycursor)
             fill_weapons(mydb, mycursor)
-            print("[INFO] Tables have been initialized")
+            logging.info("Tables have been initialized")
         elif len(table_list) < 7:  # Arbitrary value below the actual number
-            print("[WARNING] The tables has not been erased efficiently")
+            logging.warning("The tables has not been erased efficiently")
         else:
-            print(f"[INFO] {len(table_list)} tables were already initialized")
+            logging.info(f"{len(table_list)} tables were already initialized")
 
     def is_character_existing(self, hero):
         try:
@@ -92,8 +93,7 @@ class SQL:
             hero_list = self.execute_select(query)
 
         except SqlProgrammingError:
-            print(query)
-            print("[ERROR] There is likely no Characters table")
+            logging.error(f"There is likely no Characters table. QQuery was : {query}")
             exit(1)
 
         return len(hero_list) != 0
@@ -112,7 +112,7 @@ class SQL:
 
         # Add the game to the db if not existing
         if game_name not in all_games:
-            print(f"[INFO] {game_name} was not found in the database")
+            logging.info(f"{game_name} was not found in the database")
             query = f"INSERT INTO games (game_name, static_img_path)\
                     VALUES (\"{game_name}\", \"\")"
             self.execute_insert(query)
@@ -156,8 +156,6 @@ class SQL:
         return self.cursor.lastrowid
 
     def add_stats(self, latest_id: int, lvl1: Stat, lvl40: Stat, growth_rate: Stat):
-        print(f"{lvl1}, {lvl40}, ")
-        # | character_id | int  | NO   | PRI | NULL    |       |
         query = f"""
 INSERT INTO characterstats ( character_id, \
     hp_lvl1, atk_lvl1, spd_lvl1, def_lvl1, res_lvl1, \

@@ -1,4 +1,5 @@
 import mysql.connector
+import logging
 
 # from db.init import DB_NAME
 DB_NAME = "feh_db"
@@ -44,10 +45,9 @@ close, physical \
                 query += f" AND {filter} LIKE \"%{name}%\""
 
     try:
-        print(query)
+        logging.debug(query)
         cursor.execute(query, "")
         return cursor.fetchall()
     except mysql.connector.errors.ProgrammingError as err:
-        print(f"[ERROR] This query wasn't succesful : {' '.join(query.split())}")
-        print(err)
+        logging.error(f"This query wasn't succesful : {' '.join(query.split())}. {err}")
         return -1
