@@ -26,6 +26,7 @@ def extract_all_stats(html: str) -> Hero:
         has_multiple_games |= title == "Plains Wind" or title == "Sage of the Wind"
         has_multiple_games |= name == "Leif" or name == "Naga"
         if has_multiple_games:
+            # TODO Handle mutiple games
             game = ""
         else:
             game = extract_game(html[3])
