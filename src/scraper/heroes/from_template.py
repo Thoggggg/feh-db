@@ -1,5 +1,5 @@
-from scraper.heroes.hero_class import Hero
-from scraper.template_extract import extract_default
+from src.scraper.heroes.hero_class import Hero
+from src.scraper.template_extract import extract_default
 
 
 def extract_all_stats(html: str) -> Hero:
@@ -17,6 +17,8 @@ def extract_all_stats(html: str) -> Hero:
 
         picture = extract_picture(html[1])
         name, title = extract_hero(html[2])
+
+        # Special cases
         has_multiple_games = "harmonized" in attributes
         has_multiple_games |= "emblem" in attributes
         has_multiple_games |= title == "Plains Wind" or title == "Sage of the Wind"
@@ -38,37 +40,37 @@ def extract_all_stats(html: str) -> Hero:
 
 
 def extract_header(html: str):
-    # extract_default(html, "templates/heroes/header.html", 3).split(";") + \
-    return extract_default(html, "templates/heroes/header.html", 0).split(";") + \
-            extract_default(html, "templates/heroes/header.html", 1).split(";") + \
-            extract_default(html, "templates/heroes/header.html", 4).split(";")[2:], \
-            extract_default(html, "templates/heroes/header.html", 5), \
-            extract_default(html, "templates/heroes/header.html", 2).split(";")
+    # extract_default(html, "../templates/heroes/header.html", 3).split(";") + \
+    return extract_default(html, "../templates/heroes/header.html", 0).split(";") + \
+            extract_default(html, "../templates/heroes/header.html", 1).split(";") + \
+            extract_default(html, "../templates/heroes/header.html", 4).split(";")[2:], \
+            extract_default(html, "../templates/heroes/header.html", 5), \
+            extract_default(html, "../templates/heroes/header.html", 2).split(";")
 
 
 def extract_picture(html: str) -> str:
-    return extract_default(html, "templates/heroes/picture.html", 0)
+    return extract_default(html, "../templates/heroes/picture.html", 0)
 
 
 def extract_hero(html: str) -> tuple[str, str]:
-    return extract_default(html, "templates/heroes/hero.html", 1), \
-        extract_default(html, "templates/heroes/hero.html", 2)
+    return extract_default(html, "../templates/heroes/hero.html", 1), \
+        extract_default(html, "../templates/heroes/hero.html", 2)
 
 
 def extract_game(html: str) -> str:
-    return extract_default(html, "templates/heroes/game.html", 2)
+    return extract_default(html, "../templates/heroes/game.html", 2)
 
 
 def extract_entry(html: str) -> str:
-    return extract_default(html, "templates/heroes/entry.html", 1)
+    return extract_default(html, "../templates/heroes/entry.html", 1)
 
 
 def extract_move(html: str) -> str:
-    return extract_default(html, "templates/heroes/move.html", 1)
+    return extract_default(html, "../templates/heroes/move.html", 1)
 
 
 def extract_weapon(html: str) -> str:
-    return extract_default(html, "templates/heroes/weapon.html", 1)
+    return extract_default(html, "../templates/heroes/weapon.html", 1)
 
 
 def extract_rarity(html: str) -> str:
@@ -76,7 +78,7 @@ def extract_rarity(html: str) -> str:
 
 
 def extract_release(html: str) -> str:
-    return extract_default(html, "templates/heroes/release.html", 0)
+    return extract_default(html, "../templates/heroes/release.html", 0)
 
 
 if __name__ == '__main__':

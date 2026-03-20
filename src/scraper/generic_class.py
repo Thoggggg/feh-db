@@ -7,10 +7,9 @@ from abc import abstractmethod
 
 
 class GenericDataConverterToDb:
-    @abstractmethod
-    def is_valid(self):
-        pass
+    """ Abstract class defining the method that must be used for conversion """
 
     @abstractmethod
-    def add_to_db(self, db):
+    def is_valid(self):
+        """ Used to check if the given data fit """
         pass

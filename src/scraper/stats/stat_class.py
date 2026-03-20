@@ -1,20 +1,32 @@
-from scraper.generic_class import GenericDataConverterToDb
+""" Describe the stat class """
+
+from src.scraper.generic_class import GenericDataConverterToDb
 
 
-def rank_unique(data):
+def rank_unique(data: list):
+    """ Rank every stat by value and by apparition order
+    Order is always Hp, atk, spd, def, res
+
+    Args:
+        data (list): The list of 5 datas
+
+    Returns:
+        link: The ranks of each values
+    """
     # 1. Store the original index alongside the value: (index, value)
     indexed_data = list(enumerate(data))
 
     # 2. Sort based on the value (x[1]).
     # We use reverse=True so the Highest Stat gets Rank 1 (Standard FEH logic).
-    # Python's sort is stable, so ties are broken by the original index (HP > Atk > Spd > Def > Res).
+    # Python's sort is stable, so ties are broken by the original index
+    # (HP > Atk > Spd > Def > Res).
     sorted_data = sorted(indexed_data, key=lambda x: x[1], reverse=True)
 
     # 3. Create a result list of zeros to hold the ranks
     ranks = [0] * len(data)
 
     # 4. Assign ranks based on the position in the sorted list
-    for rank, (original_index, value) in enumerate(sorted_data):
+    for rank, (original_index, _) in enumerate(sorted_data):
         # Use 'rank + 1' for 1-based ranking (1st, 2nd, 3rd)
         ranks[original_index] = rank + 1
 
@@ -63,11 +75,18 @@ class Stat(GenericDataConverterToDb):
         return self
 
     def rank(self):
+        """ Ranks based on values in this specific Stat object
+
+        Returns:
+            Stat: The stat with just the ranks
+        """
         # Ranks based on values in this specific Stat object
         ranks = rank_unique([self.hp, self.atk, self.spd, self.dfs, self.res])
         return Stat(*ranks)
 
     def is_valid(self):
+        """ Check if a stat has valid data """
+
         return all([
             self.hp != 0,
             self.atk != 0,

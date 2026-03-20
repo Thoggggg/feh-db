@@ -1,3 +1,5 @@
+""" Define the default scraper """
+
 from abc import abstractmethod
 import os
 from bs4 import BeautifulSoup
@@ -6,19 +8,21 @@ import requests
 
 
 class Scraper:
+    """ Default scrapper """
+
     def __init__(self, url, skip_download=False):
         self.skip_download = skip_download
         self.fandom_url = url
         if url is not None:
             print(url)
             page_name = url.split("page=")[1].split("&prop")[0]
-            self.html_output = f"html/base_{page_name}.html"
+            self.html_output = f"../html/base_{page_name}.html"
 
     def scrap(self):
         """ Get a soup representation of a URL
 
         Returns:
-            BeautifulSoup: TODO
+            BeautifulSoup: a soup of the html
         """
 
         if not self.skip_download or not os.path.exists(self.html_output):
@@ -83,6 +87,6 @@ class Scraper:
 
 
 if __name__ == "__main__":
-    from urls import FEH_FANDOM_HEROES
+    from src.urls import FEH_FANDOM_HEROES
 
     scraper = Scraper(FEH_FANDOM_HEROES, skip_download=True)

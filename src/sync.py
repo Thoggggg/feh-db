@@ -1,17 +1,27 @@
-from scraper.generic_scraper import FehScraper
-from db.sql import SQL
+from src.scraper.generic_scraper import FehScraper
+from src.db.sql import SQL
 
 
 # TODO : Add a confirmation
 def sync(feh_scraper: FehScraper, db: SQL):
+    """ Created a line for each hero in every db
+
+    Args:
+        feh_scraper (FehScraper): The scraper that got all the data
+        db (SQL): the sql database
+    """
+
+    # Scrap new info
     heroes = feh_scraper.heroes.scrap()
     lvl1_stats = feh_scraper.scraper_lvl1.scrap()
     lvl40_stats = feh_scraper.scraper_lvl40.scrap()
     gr_stats = feh_scraper.scraper_gr.scrap()
 
+    # For debug purposes
     skipped_counter = 0
 
     for h, l1, l40, gr in zip(heroes, lvl1_stats, lvl40_stats, gr_stats):
+        # Extract from the soup
         hero = feh_scraper.heroes.extract_class(h)
         lvl1_stat = feh_scraper.scraper_lvl1.extract_class(l1)
         lvl40_stat = feh_scraper.scraper_lvl40.extract_class(l40)
@@ -36,9 +46,8 @@ def sync(feh_scraper: FehScraper, db: SQL):
 
         if not db.is_character_existing(hero):
             print(f"[INFO] Adding {hero.name} as he was unknown before")
-            db.add_characters(hero)
-            latest_id = db.cursor.lastrowid
-            db.add_stats(latest_id, lvl1_stat, lvl40_stat, gr_stat)
+            hero_id = db.add_characters(hero)
+            db.add_stats(hero_id, lvl1_stat, lvl40_stat, gr_stat)
         else:
             skipped_counter += 1
 

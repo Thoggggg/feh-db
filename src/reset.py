@@ -1,7 +1,7 @@
 import mysql.connector
 from mysql.connector import errorcode
-from db.init import DB_NAME
-from db.sql_strings import create_tables
+from src.db.init import DB_NAME
+from src.db.sql_strings import create_tables
 
 
 def delete_all(db, cursor):

@@ -1,6 +1,11 @@
+from itertools import product
+
 import mysql.connector
 from mysql.connector.abstracts import MySQLCursorAbstract as SqlCursor
-from db.sql_strings import create_tables
+from src.db.sql_strings import create_tables
+from src.enums.colors import WeaponColor
+from src.enums.movements import MOVEMENTS_TYPE
+from src.enums.weapons import SpecificWeaponType, WeaponType
 
 DB_NAME = "feh_db"
 
@@ -24,6 +29,7 @@ def setup_db(cursor: SqlCursor):
 
 def setup_tables(cursor: SqlCursor):
     """Create the tables for the project
+    NOTE : doesn't fill the tables
 
     Args:
         cursor (SqlCursor):
@@ -54,10 +60,8 @@ def fill_movements(db, cursor: SqlCursor):
     """
     sql = """INSERT INTO movements (id, movement_type, static_image_path)\
              VALUES (%s, %s, %s)"""
-    val = [(0, "Infantry", ""),
-           (1, "Cavalry", ""),
-           (2, "Armored", ""),
-           (3, "Flying", ""),]
+    val = [(i, mov, "") for i, mov in enumerate(MOVEMENTS_TYPE)]
+
     cursor.executemany(sql, val)
 
     db.commit()
@@ -70,37 +74,27 @@ def fill_weapons(db, cursor: SqlCursor):
         db () : Connector to the db
         cursor (SqlCursor): cursor of the db
     """
+
     sql = """INSERT INTO weapons (id, weapon_type, color, static_img)\
              VALUES (%s, %s, %s, %s)"""
 
-    colors = ["Red", "Blue", "Green", "Colorless"]
-    weapon = ["Bow", "Dagger", "Tome", "Breath", "Beast"]
+    # colors = ["Red", "Blue", "Green", "Colorless"]
+    # weapon = ["Bow", "Dagger", "Tome", "Breath", "Beast"]
 
-    val = [(0, "Sword", "Red", ""),
-           (1, "Axe",   "Green", ""),
-           (2, "Lance", "Blue", ""),
-           (3, "Staff", "Colorless", "")]
+    val = [(i, weapon[0], weapon[1], "") for i, weapon in enumerate(zip(SpecificWeaponType, WeaponColor))]
+    val += [(i + 4, weapon[0], weapon[1], "") for i, weapon in enumerate(product(WeaponType, WeaponColor))]
 
-    cpt = 4
-    for w in weapon:
-        for c in colors:
-            val.append((cpt, w, c, ""))
-            cpt += 1
+    # val = [(0, "Sword", "Red", ""),
+    #        (1, "Axe",   "Green", ""),
+    #        (2, "Lance", "Blue", ""),
+    #        (3, "Staff", "Colorless", "")]
+
+    # cpt = 4
+    # for w in weapon:
+    #     for c in colors:
+    #         val.append((cpt, w, c, ""))
+    #         cpt += 1
 
     cursor.executemany(sql, val)
 
     db.commit()
-
-
-if __name__ == "__main__":
-    mydb = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="YDoIN33dApwd ?")
-
-    mycursor = mydb.cursor()
-
-    setup_db(mycursor)
-    setup_tables(mycursor)
-    fill_movements(mydb, mycursor)
-    fill_weapons(mydb, mycursor)

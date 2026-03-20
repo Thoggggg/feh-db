@@ -1,0 +1,22 @@
+[project]
+name = "feh-db"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "beautifulsoup4>=4.14.3",
+    "dotenv>=0.9.9",
+    "fastapi>=0.129.0",
+    "mysql-connector-python>=9.6.0",
+    "requests>=2.32.5",
+    "uvicorn>=0.40.0",
+]
+
+[dependency-groups]
+dev = [
+    "pylint>=4.0.5",
+]
+
+[project.scripts]
+feh-api = "src.api:app"

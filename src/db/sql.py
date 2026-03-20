@@ -1,10 +1,15 @@
 from mysql.connector.errors import ProgrammingError as SqlProgrammingError
 import mysql.connector
 
-from db.init import DB_NAME
-from db.init import fill_movements, fill_weapons
-from db.init import setup_db, setup_tables
-from scraper.stats.stat_class import Stat
+from src.db.init import DB_NAME
+from src.db.init import fill_movements, fill_weapons
+from src.db.init import setup_db, setup_tables
+from src.scraper.stats.stat_class import Stat
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class SQL:
@@ -14,7 +19,7 @@ class SQL:
         self.db = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="YDoIN33dApwd ?",
+            password=os.environ["DB_PASSWORD"],
             database=f"{DB_NAME}"
         )
 
@@ -52,7 +57,7 @@ class SQL:
         mydb = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="YDoIN33dApwd ?")
+            password=os.environ["DB_PASSWORD"])
 
         mycursor = mydb.cursor()
 
@@ -72,11 +77,10 @@ class SQL:
             fill_movements(mydb, mycursor)
             fill_weapons(mydb, mycursor)
             print("[INFO] Tables have been initialized")
+        elif len(table_list) < 7:  # Arbitrary value below the actual number
+            print("[WARNING] The tables has not been erased efficiently")
         else:
-            if len(table_list) < 7:  # Arbitrary value below the actual number
-                print("[WARNING] The tables has not been wiped efficiently")
-            else:
-                print("[INFO] Tables were already initialized")
+            print(f"[INFO] {len(table_list)} tables were already initialized")
 
     def is_character_existing(self, hero):
         try:
@@ -113,7 +117,7 @@ class SQL:
                     VALUES (\"{game_name}\", \"\")"
             self.execute_insert(query)
 
-    def add_characters(self, hero):
+    def add_characters(self, hero) -> int:
         # add the game to the db if not existing
         self.add_game(hero.game)
 
@@ -140,7 +144,7 @@ class SQL:
             \"{hero.picture}\"
         );"""
 
-        self.execute_insert(query, False)
+        self.execute_insert(query, True)
 
         # Add the abilities in the other table
         query = f""" INSERT INTO attributes ({', '.join(hero.attributes)})\
@@ -148,6 +152,8 @@ class SQL:
         """
 
         self.execute_insert(query, False)
+
+        return self.cursor.lastrowid
 
     def add_stats(self, latest_id: int, lvl1: Stat, lvl40: Stat, growth_rate: Stat):
         print(f"{lvl1}, {lvl40}, ")

@@ -2,10 +2,18 @@ from math import floor
 from mysql.connector.abstracts import MySQLCursorAbstract
 from mysql.connector.errors import ProgrammingError
 
-from scraper.stats.stat_class import Stat
+from src.scraper.stats.stat_class import Stat
 
 
-def set_my_characters(cursor: MySQLCursorAbstract, id: int, lvl: int, fusion: int, buff: str, nerf: str, draco_flower: int):
+def set_my_characters(
+        cursor: MySQLCursorAbstract,
+        id: int,
+        lvl: int,
+        fusion: int,
+        buff: str,
+        nerf: str,
+        draco_flower: int):
+
     character_stats = _get_characters_stats(cursor, id)
 
     if not buff:
@@ -19,18 +27,18 @@ def set_my_characters(cursor: MySQLCursorAbstract, id: int, lvl: int, fusion: in
         lvl1 = _get_lvl1_dict(character_stats)
 
         # If not 40 considered one
-        if lvl != 40:
-            stat = lvl1
+        stat = lvl1
 
         growth = _get_growth_rate_dict(character_stats)
     except ValueError as err:
         print(character_stats)
         print(f"[ERROR] {err}")
 
-        return
+        return character_stats
 
     # Compute the lvl 40 with the buff and nerf
-    stat = compute_all_40(growth, traits_dic, lvl1, fusion)
+    if lvl == 40:
+        stat = compute_all_40(growth, traits_dic, lvl1, fusion)
 
     # Change the values in the
     query = f"SELECT * FROM mycharacters WHERE Character_ID = {id}"
@@ -39,7 +47,7 @@ def set_my_characters(cursor: MySQLCursorAbstract, id: int, lvl: int, fusion: in
     except ProgrammingError as err:
         print(f"[ERROR] This query wasn't succesful : {' '.join(query.split())}")
         print(err)
-        return
+        return character_stats
 
     if len(cursor.fetchall()) == 0:
         query = "INSERT INTO mycharacters (" \
@@ -61,7 +69,7 @@ def set_my_characters(cursor: MySQLCursorAbstract, id: int, lvl: int, fusion: in
             f"current_atk = {stat.atk}, " \
             f"current_spe = {stat.spd}, " \
             f"current_def = {stat.dfs}, " \
-            f"current_res = {stat.res}, " \
+            f"current_res = {stat.res} " \
             f"WHERE Character_ID = {id}"
 
     try:
@@ -70,7 +78,8 @@ def set_my_characters(cursor: MySQLCursorAbstract, id: int, lvl: int, fusion: in
     except ProgrammingError as err:
         print(f"[ERROR] This query wasn't succesful : {' '.join(query.split())}")
         print(err)
-        return
+
+    return character_stats
 
 
 def _get_characters_stats(cursor: MySQLCursorAbstract, id: int):
@@ -80,7 +89,7 @@ def _get_characters_stats(cursor: MySQLCursorAbstract, id: int):
     except ProgrammingError as err:
         print(f"[ERROR] This query wasn't succesful : {' '.join(query.split())}")
         print(err)
-        return
+        return []
     character_stats = cursor.fetchall()
 
     # Check that the character stats are correct
@@ -89,7 +98,7 @@ def _get_characters_stats(cursor: MySQLCursorAbstract, id: int):
         return []
 
     if len(character_stats[0]) != 16:
-        print("[ERROR] Couldn't unpack characterstats, weird")
+        print("[ERROR] Couldn't unpack characterstats")
         return []
 
     return character_stats[0][1:]  # Ignore the character ID
@@ -164,7 +173,8 @@ def compute_all_40(growth_rate: Stat, buff: Stat, lvl1: Stat, fusion: int):
         growth_rate_calc = gr + b
         lvl1_calc = l1 + b
 
-        growth_value = floor(39 * floor(growth_rate_calc * 1.14) / 100)
+        # 0.01 is not in the formula but is due to how python handles floats
+        growth_value = floor(39 * floor(growth_rate_calc * 1.14 + 0.01) / 100)
         base_lvl40 = lvl1_calc + growth_value
 
         # --- Merge Calculations ---
