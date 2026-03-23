@@ -1,6 +1,5 @@
 import mysql.connector
 from mysql.connector import errorcode
-from src.db.init import DB_NAME
 from src.db.sql_strings import create_tables
 import logging
 
@@ -11,8 +10,6 @@ def delete_all(db, cursor):
 
     # --- Connection setup ---
     try:
-        logging.info(f"Connected to database '{DB_NAME}'.")
-
         # 1. Disable foreign key checks to avoid errors about table dependencies.
         cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")
         logging.debug("Disabled foreign key checks.")
@@ -36,7 +33,5 @@ def delete_all(db, cursor):
     except mysql.connector.Error as err:
         if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
             logging.error("Something is wrong with the username or the password")
-        elif err.errno == errorcode.ER_BAD_DB_ERROR:
-            logging.critical(f"[ERROR] Database '{DB_NAME}' does not exist")
         else:
             logging.error(str(err))

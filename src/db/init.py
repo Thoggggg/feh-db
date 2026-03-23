@@ -8,10 +8,8 @@ from src.enums.colors import WeaponColor
 from src.enums.movements import MOVEMENTS_TYPE
 from src.enums.weapons import SpecificWeaponType, WeaponType
 
-DB_NAME = "feh_db"
 
-
-def setup_db(cursor: SqlCursor):
+def setup_db(cursor: SqlCursor, db_name):
     """Setup the database object
 
     Args:
@@ -23,19 +21,19 @@ def setup_db(cursor: SqlCursor):
     # Fetch all give a list of tuples of size 1
     db_list = [db[0] for db in db_list]
 
-    if DB_NAME not in db_list:
-        logging.warning(f"db not found, creating {DB_NAME}")
-        cursor.execute(f"CREATE DATABASE {DB_NAME}")
+    if db_name not in db_list:
+        logging.warning(f"db not found, creating {db_name}")
+        cursor.execute(f"CREATE DATABASE {db_name}")
 
 
-def setup_tables(cursor: SqlCursor):
+def setup_tables(cursor: SqlCursor, db_name):
     """Create the tables for the project
     NOTE : doesn't fill the tables
 
     Args:
         cursor (SqlCursor):
     """
-    cursor.execute(f"USE {DB_NAME}")
+    cursor.execute(f"USE {db_name}")
     cursor.execute("SHOW TABLES")
 
     table_list = cursor.fetchall()

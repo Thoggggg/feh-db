@@ -1,9 +1,6 @@
 import mysql.connector
 import logging
 
-# from db.init import DB_NAME
-DB_NAME = "feh_db"
-
 
 def get_heroes(cursor, filters: dict[str, str] = {}):
     """ fetch heroes from the db """
