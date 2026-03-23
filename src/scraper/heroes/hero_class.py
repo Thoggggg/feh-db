@@ -6,15 +6,13 @@ from src.scraper.generic_class import GenericDataConverterToDb
 
 class Hero(GenericDataConverterToDb):
     """ Representation of a hero """
-    def __init__(self, picture, name, title, game, entry,
-                 move, weapon, rarity, attributes, release):
-        self.picture = picture
+    def __init__(self, name, title, game, entry,
+                 move, weapon, attributes, release):
         self.name, self.title = name, title
         self.game: str = game
         self.entry = entry
         self.move = move
         self.weapon = weapon
-        self.rarity = rarity
         self.release = release
         self.attributes: list[str] = []
 
