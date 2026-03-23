@@ -1,8 +1,9 @@
 from mysql.connector.errors import ProgrammingError as SqlProgrammingError
 import mysql.connector
 import logging
+from pydantic_settings import BaseSettings
+from pydantic import Field
 
-from src.db.init import DB_NAME
 from src.db.init import fill_movements, fill_weapons
 from src.db.init import setup_db, setup_tables
 from src.scraper.stats.stat_class import Stat
@@ -10,7 +11,13 @@ from src.scraper.stats.stat_class import Stat
 import os
 from dotenv import load_dotenv
 
+# Must be executed before launching the app
 load_dotenv()
+
+
+class Settings(BaseSettings):
+    db_password: str = Field(validation_alias='my_auth_key')
+    db_name: str = Field()
 
 
 class SQL:
@@ -20,8 +27,8 @@ class SQL:
         self.db = mysql.connector.connect(
             host="localhost",
             user="root",
-            password=os.environ["DB_PASSWORD"],
-            database=f"{DB_NAME}"
+            password=os.environ["db_password"],
+            database=os.environ["db_name"]
         )
 
         self.cursor = self.db.cursor()
@@ -63,10 +70,11 @@ class SQL:
         mycursor = mydb.cursor()
 
         # Create a database
-        setup_db(mycursor)
+        db_name = os.environ["db_name"]
+        setup_db(mycursor, os.environdb_name)
 
         # Get the list of all the existing tables
-        mycursor.execute(f"USE {DB_NAME}")
+        mycursor.execute(f"USE {db_name}")
         mycursor.execute("SHOW TABLES")
 
         table_list = mycursor.fetchall()
@@ -74,7 +82,7 @@ class SQL:
 
         # Init if there is no tables
         if len(table_list) == 0:
-            setup_tables(mycursor)
+            setup_tables(mycursor, db_name)
             fill_movements(mydb, mycursor)
             fill_weapons(mydb, mycursor)
             logging.info("Tables have been initialized")
