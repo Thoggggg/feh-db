@@ -114,7 +114,7 @@ def _get_buff_dict(buff: str, nerf: str) -> Stat:
     if nerf in traits_dic.keys():
         traits_dic[nerf] = -1
     else:
-        logging.(f"Ignoring {id} nerf ({nerf} was unexpected)")
+        logging.warning(f"Ignoring {id} nerf ({nerf} was unexpected)")
 
     return Stat(traits_dic['hp'], traits_dic['atk'], traits_dic['spd'], traits_dic['def'], traits_dic['res'])
 

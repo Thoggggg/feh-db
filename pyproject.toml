@@ -9,6 +9,7 @@ dependencies = [
     "dotenv>=0.9.9",
     "fastapi>=0.129.0",
     "mysql-connector-python>=9.6.0",
+    "pydantic-settings>=2.13.1",
     "requests>=2.32.5",
     "uvicorn>=0.40.0",
 ]
@@ -17,6 +18,3 @@ dependencies = [
 dev = [
     "pylint>=4.0.5",
 ]
-
-[project.scripts]
-feh-api = "src.api:app"
