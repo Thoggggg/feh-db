@@ -67,7 +67,11 @@ class HeroScraper(Scraper):
             attributes += match[0].attrs["data-availability-classes"].split(';')
             return Hero(name, title, game, "",
                         move, weapon, attributes, release)
+        except KeyError as err:
+            logging.error("There is an issue with the format of the hero table. More info : ")
+            logging.error(f"{err}. \n{soup}")
         except Exception as err:
             logging.error(f"{err}. \n{soup}")
-            return Hero("", "", "", "", "", "", "", "", [], "0001-01-01")
+
+        return Hero("", "", "", "", "", "", "", "", [], "0001-01-01")
 

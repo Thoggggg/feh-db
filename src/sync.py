@@ -3,6 +3,22 @@ from src.scraper.generic_scraper import FehScraper
 from src.db.sql import SQL
 
 
+def are_all_tab_are_equal(tables: list) -> bool:
+    """ Check if all the table are of the same length
+
+    Args:
+        tables (list): List of list to check
+
+    Returns:
+        bool: If all tables are of the same size
+    """
+    expected_length = len(tables[0])
+    for table in tables[1:]:
+        if len(table) != expected_length:
+            return False
+        
+    return True
+
 # TODO : Add a confirmation
 def sync(feh_scraper: FehScraper, db: SQL):
     """ Created a line for each hero in every db
@@ -20,6 +36,16 @@ def sync(feh_scraper: FehScraper, db: SQL):
 
     # For debug purposes
     skipped_counter = 0
+
+    # Check iuf we can do the data extraction
+    if not are_all_tab_are_equal([
+        heroes, lvl1_stats, lvl40_stats, gr_stats
+    ]):
+        logging.error("All 4 tables don't have the same number of lines :")
+        logging.error(f"Got : {len(heroes)=}, "
+                      f"{len(lvl1_stats)=}, "
+                      f" {len(lvl40_stats)=}, "
+                      f" {len(gr_stats)=}")
 
     for h, l1, l40, gr in zip(heroes, lvl1_stats, lvl40_stats, gr_stats):
         # Extract from the soup
