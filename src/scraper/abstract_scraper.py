@@ -4,7 +4,7 @@ from abc import abstractmethod
 import os
 from bs4 import BeautifulSoup
 from bs4.element import Tag
-import requests
+import httpx
 import logging
 
 
@@ -49,7 +49,7 @@ class Scraper:
             BeautifulSoup: A soup object with the content of the web page
         """
         # set the url to perform the get request
-        page = requests.get(self.fandom_url)
+        page = httpx.get(self.fandom_url)
 
         # load the page content
         text = page.json()
