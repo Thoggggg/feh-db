@@ -71,7 +71,7 @@ class SQL:
 
         # Create a database
         db_name = os.environ["db_name"]
-        setup_db(mycursor, os.environdb_name)
+        setup_db(mycursor, db_name)
 
         # Get the list of all the existing tables
         mycursor.execute(f"USE {db_name}")

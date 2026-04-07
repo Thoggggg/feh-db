@@ -24,7 +24,7 @@ feh_scraper = FehScraper()
 
 db = SQL()
 
-logging.basicConfig("feh_db")
+logging.basicConfig(filename="feh_db")
 
 
 class HeroesFilters(BaseModel):
