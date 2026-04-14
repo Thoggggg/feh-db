@@ -43,8 +43,13 @@ class SQL:
         """
         if verbose:
             logging.debug(query)
-        self.cursor.execute(query, "")
-        self.db.commit()
+
+        try:
+            self.cursor.execute(query, "")
+            self.db.commit()
+        except mysql.connector.errors.DataError as err:
+            logging.critical(f"Error on {query}")
+            raise err
 
     def execute_select(self, query):
         """ Execute a sql select query
@@ -101,7 +106,7 @@ class SQL:
             hero_list = self.execute_select(query)
 
         except SqlProgrammingError:
-            logging.error(f"There is likely no Characters table. QQuery was : {query}")
+            logging.error(f"There is likely no Characters table. Query was : {query}")
             exit(1)
 
         return len(hero_list) != 0
@@ -127,7 +132,8 @@ class SQL:
 
     def add_characters(self, hero) -> int:
         # add the game to the db if not existing
-        self.add_game(hero.game)
+        self.add_game(hero.game[0])
+        self.add_game(hero.game[1])
 
         # Get weapon data
         weapon = hero.weapon.split(" ")
@@ -140,16 +146,17 @@ class SQL:
 
         # Create the query with all the data
         query = f"""
-            INSERT INTO characters (Name, Title, Game_ID, Movement_ID, \
+            INSERT INTO characters (Name, Title, Game_ID_1, Game_ID_2, Movement_ID, \
                 Weapon_ID, Date, Static_img_path) VALUES ( \
             \"{hero.name}\",
             \"{hero.title}\",
-            (SELECT ID FROM games WHERE game_name = \"{hero.game}\"),
+            (SELECT ID FROM games WHERE game_name = \"{hero.game[0]}\"),
+            (SELECT ID FROM games WHERE game_name = \"{hero.game[1]}\"),
             (SELECT ID FROM movements WHERE movement_type = \"{hero.move}\"),
             (SELECT ID FROM weapons WHERE weapon_type = \"{weapon_type}\" \
                                         and color = \"{weapon_color}\"),
             \"{hero.release}\",
-            \"{hero.picture}\"
+            \"deprecated\"
         );"""
 
         self.execute_insert(query, True)

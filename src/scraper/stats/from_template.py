@@ -1,6 +1,7 @@
 """ Functions to extract data from a template"""
 
 import logging
+import os
 
 from src.scraper.stats.stat_class import Stat
 from src.scraper.template_extract import extract_default
@@ -25,4 +26,4 @@ def extract_all_stats(html: str, offset=0) -> Stat:
 
 
 def extract_number(html: str) -> str:
-    return extract_default(html, "../templates/stats/number.html", 0)
+    return extract_default(html, "templates/stats/number.html", 0)

@@ -24,13 +24,15 @@ _characters_create = """Characters (
     ID INT PRIMARY KEY AUTO_INCREMENT,
     Name VARCHAR(255) NOT NULL,
     Title VARCHAR(255),
-    Game_ID INT,
+    Game_ID_1 INT,
+    Game_ID_2 INT,
     Movement_ID INT,
     Weapon_ID INT,
     Date DATE,
     Static_img_path VARCHAR(255),
 
-    FOREIGN KEY (Game_ID) REFERENCES Games(ID),
+    FOREIGN KEY (Game_ID_1) REFERENCES Games(ID),
+    FOREIGN KEY (Game_ID_2) REFERENCES Games(ID),
     FOREIGN KEY (Movement_ID) REFERENCES Movements(ID),
     FOREIGN KEY (Weapon_ID) REFERENCES Weapons(ID)
 );"""

@@ -2,6 +2,7 @@
 
 from abc import abstractmethod
 import os
+import time
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 import httpx
@@ -14,10 +15,12 @@ class Scraper:
     def __init__(self, url, skip_download=False):
         self.skip_download = skip_download
         self.fandom_url = url
+        self.headers = {'user-agent': 'feh-db/0.0.1'}
+        self.last_fetch = time.time()
         if url is not None:
-            logging.error(f"Scraper is using this url : {url}")
+            logging.info(f"Scraper is using this url : {url}")
             page_name = url.split("page=")[1].split("&prop")[0]
-            self.html_output = f"../html/base_{page_name}.html"
+            self.html_output = f"html/base_{page_name}.html"
 
     def scrap(self):
         """ Get a soup representation of a URL
@@ -48,8 +51,14 @@ class Scraper:
         Returns:
             BeautifulSoup: A soup object with the content of the web page
         """
+        # Politeness check (1s)
+        if self.last_fetch < time.time() - 1:
+            logging.warning("Get data to close to each other, try again")
+            return
+
         # set the url to perform the get request
-        page = httpx.get(self.fandom_url)
+        page = httpx.get(self.fandom_url, headers=self.headers)
+        self.last_fetch = time.time()
 
         # load the page content
         text = page.json()

@@ -16,8 +16,9 @@ def are_all_tab_are_equal(tables: list) -> bool:
     for table in tables[1:]:
         if len(table) != expected_length:
             return False
-        
+
     return True
+
 
 # TODO : Add a confirmation
 def sync(feh_scraper: FehScraper, db: SQL):
@@ -37,7 +38,7 @@ def sync(feh_scraper: FehScraper, db: SQL):
     # For debug purposes
     skipped_counter = 0
 
-    # Check iuf we can do the data extraction
+    # Check if we can do the data extraction
     if not are_all_tab_are_equal([
         heroes, lvl1_stats, lvl40_stats, gr_stats
     ]):
@@ -46,6 +47,8 @@ def sync(feh_scraper: FehScraper, db: SQL):
                       f"{len(lvl1_stats)=}, "
                       f" {len(lvl40_stats)=}, "
                       f" {len(gr_stats)=}")
+
+        return
 
     for h, l1, l40, gr in zip(heroes, lvl1_stats, lvl40_stats, gr_stats):
         # Extract from the soup
@@ -56,19 +59,19 @@ def sync(feh_scraper: FehScraper, db: SQL):
 
         # Check if the data is correct
         if not hero.is_valid():
-            logging.warning(f"{hero.name} name is invalid")
+            logging.warning(f"'{hero.name}' name is invalid")
             continue
 
         if not lvl1_stat.is_valid():
-            logging.warning(f"{hero.name} lvl1 is invalid")
+            logging.warning(f"'{hero.name}' lvl1 is invalid")
             continue
 
         if not lvl40_stat.is_valid():
-            logging.warning(f"{hero.name} lvl40 is invalid")
+            logging.warning(f"'{hero.name}' lvl40 is invalid")
             continue
 
         if not gr_stat.is_valid():
-            logging.warning(f"{hero.name} growth rate is invalid")
+            logging.warning(f"'{hero.name}' growth rate is invalid")
             continue
 
         if not db.is_character_existing(hero):
@@ -78,7 +81,7 @@ def sync(feh_scraper: FehScraper, db: SQL):
         else:
             skipped_counter += 1
 
-    logging.indo(f"skipped {skipped_counter} out of {len(heroes)}")
+    logging.info(f"skipped {skipped_counter} out of {len(heroes)}")
 
 
 if __name__ == "__main__":
